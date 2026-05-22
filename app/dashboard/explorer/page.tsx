@@ -48,25 +48,24 @@ export default function ExplorerPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    let q = supabase
-      .from("transactions")
-      .select("id,posting_date,company_code,transaction_type,doc_type,gl_account,amount,currency,bp_code,memo,cost_center", { count: "exact" })
-      .order("posting_date", { ascending: false })
-      .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
     const d = new Date();
     d.setMonth(d.getMonth() - 12);
     const defaultFrom = d.toISOString().split("T")[0];
 
-    q = q.gte("posting_date", dateFrom || defaultFrom);
-    if (dateTo) q = q.lte("posting_date", dateTo);
-    if (txType) q = q.eq("transaction_type", txType);
-    if (glSearch) q = q.eq("gl_account", Number(glSearch));
-    if (memoSearch) q = q.ilike("memo", `%${memoSearch}%`);
+    const { data } = await supabase.rpc("get_transactions", {
+      p_from:       dateFrom || defaultFrom,
+      p_to:         dateTo   || null,
+      p_tx_type:    txType   || null,
+      p_gl_account: glSearch ? Number(glSearch) : null,
+      p_memo:       memoSearch || null,
+      p_limit:      PAGE_SIZE,
+      p_offset:     page * PAGE_SIZE,
+    });
 
-    const { data, count: cnt } = await q;
-    setRows((data as Row[]) ?? []);
-    setCount(cnt ?? 0);
+    const rows = (data as any[]) ?? [];
+    setRows(rows as Row[]);
+    setCount(rows.length > 0 ? Number(rows[0].total_count) : 0);
     setLoading(false);
   }, [page, dateFrom, dateTo, txType, glSearch, memoSearch]);
 
