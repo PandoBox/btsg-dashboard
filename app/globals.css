@@ -1,27 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  html, body {
+    height: 100%;
+    background-color: #0A0B14;
+    color: #F8FAFC;
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
+
+  ::selection { background: rgba(94,234,212,0.25); }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Liquid Glass surface */
+  .glass {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .glass-hover {
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.22,1,0.36,1);
+  }
+  .glass-hover:hover {
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
+    transform: translateY(-1px);
+  }
+
+  /* Mesh gradient background */
+  .mesh-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 15% 20%,  rgba(99,102,241,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 85% 80%,  rgba(94,234,212,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 50% 50%,  rgba(139,92,246,0.08) 0%, transparent 70%),
+      #0A0B14;
+    pointer-events: none;
+  }
+
+  /* Specular top edge on cards */
+  .specular::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  /* Animated entrance */
+  .fade-up { opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+  /* Staggered children */
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 60ms; }
+  .stagger > *:nth-child(3) { animation-delay: 120ms; }
+  .stagger > *:nth-child(4) { animation-delay: 180ms; }
+  .stagger > *:nth-child(5) { animation-delay: 240ms; }
+  .stagger > *:nth-child(6) { animation-delay: 300ms; }
+
+  /* Mint accent pill */
+  .pill-mint {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: rgba(94,234,212,0.12);
+    color: #5EEAD4;
+    border: 1px solid rgba(94,234,212,0.2);
+  }
+
+  /* Sidebar active link */
+  .nav-active {
+    background: rgba(94,234,212,0.10);
+    border: 1px solid rgba(94,234,212,0.18);
+    color: #5EEAD4;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+  .nav-link:hover { color: #fff; background: rgba(255,255,255,0.06); }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+  .text-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+  .text-value { font-size: 2rem; font-weight: 300; letter-spacing: -0.03em; color: #F8FAFC; line-height: 1; }
+  .text-value-sm { font-size: 1.4rem; font-weight: 300; letter-spacing: -0.02em; color: #F8FAFC; }
+
+  .positive { color: #5EEAD4; }
+  .negative { color: #FB7185; }
+  .warning  { color: #FCD34D; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
